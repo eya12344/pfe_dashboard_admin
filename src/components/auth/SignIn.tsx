@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
-
+import LogoD from "./LogoD.png";
 interface SignInProps {
   onLoginSuccess: () => void;
 }
@@ -16,45 +16,30 @@ export default function SignIn({ onLoginSuccess }: SignInProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      console.log("Tentative de connexion avec:", { email, password });
-      
-      // Appel à l'API de connexion
-      const response = await axios.post('http://localhost:4000/api/auth/signin', {
-        email,
-        password
-      });
-
-      console.log("Réponse complète du serveur:", response);
+      const response = await axios.post(
+        "http://localhost:4000/api/auth/signin",
+        {
+          email,
+          password,
+        }
+      );
 
       if (response.data.success) {
-        console.log("✅ Connexion réussie! Utilisateur connecté:", response.data.user.email);
-        
-        // Stocker le token dans localStorage
-        localStorage.setItem('token', response.data.token);
-        
-        // Stocker les informations utilisateur
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        
-        // Informer le parent que la connexion est réussie
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         onLoginSuccess();
-        
-        // Naviguer vers la page d'accueil
-        navigate('/hello');
+        navigate("/hello");
       } else {
-        console.log("❌ Échec de la connexion:", response.data);
-        setError('Échec de la connexion. Veuillez réessayer.');
+        setError("Échec de la connexion. Veuillez réessayer.");
       }
     } catch (err: any) {
-      console.error('Erreur de connexion détaillée:', err.response || err);
-      
-      // Afficher le message d'erreur de l'API si disponible
       setError(
-        err.response?.data?.message || 
-        'Échec de la connexion. Veuillez vérifier vos identifiants.'
+        err.response?.data?.message ||
+          "Échec de la connexion. Veuillez vérifier vos identifiants."
       );
     } finally {
       setLoading(false);
@@ -62,43 +47,51 @@ export default function SignIn({ onLoginSuccess }: SignInProps) {
   };
 
   return (
-    <div className="signin-container">
-      <h2>Connexion</h2>
+    <div className="signin-wrapper">
+      {/* Colonne gauche - formulaire */}
+      <div className="signin-left">
+        <div className="form-box">
+          <h2 className="form-box-h2">Sign In</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Mot de passe</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && <div className="error-message">{error}</div>}
+
+            <div className="form-group">
+              <button type="submit" disabled={loading}>
+                {loading ? "Connexion..." : "Se connecter"}
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
 
-        <div className="form-group">
-          <label htmlFor="password">Mot de passe</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        {error && <div className="error-message">{error}</div>}
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Connexion..." : "Se connecter"}
-        </button>
-      </form>
+      {/* Colonne droite - visuel Wishit */}
+      <div className="signin-right">
+        <img src={LogoD} alt="logo" className="ribbon" />
+        <h1 className="logo-text">Wishit</h1>
+      </div>
     </div>
   );
 }
-
-
-
-
-

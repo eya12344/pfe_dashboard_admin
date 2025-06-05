@@ -1,89 +1,140 @@
-.signin-container {
+/* SignIn.css */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.signin-wrapper {
+  display: flex;
+  height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Colonne gauche */
+.signin-left {
+  width: 50%;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.form-box {
+  width: 100%;
   max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  background-color: white;
+}
+
+.form-box h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: black;
+}
+
+.form-box p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  font-size: 14px;
+  margin-bottom: 8px;
   font-weight: 500;
+  color: #333;
 }
 
 .form-group input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
+  padding: 12px 15px;
+  border: 1px solid #e7eae9;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background-color: #e7eae9;
+
 }
 
-button {
+.form-group input:focus {
+  border-color: #89adb3;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(137, 173, 179, 0.2);
+  background-color: #e7eae9; /* Garde la même couleur de fond lors du focus */
+}
+
+.form-group input::placeholder {
+  color: #aaa;
+}
+
+button[type="submit"] {
   width: 100%;
-  padding: 12px;
-  background-color: #4a90e2;
+  padding: 14px;
+  background: #89adb3;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-weight: bold;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #357abD;
+  transition: background 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 button:disabled {
-  background-color: #cccccc;
+  background: #ccc;
   cursor: not-allowed;
+  box-shadow: none;
+}
+
+button:hover:not(:disabled) {
+  background: #d4d2e2;
 }
 
 .error-message {
   color: #e74c3c;
   margin-bottom: 15px;
   font-size: 14px;
-}
-
-.connection-success {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: rgba(231, 76, 60, 0.1);
   padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 15px;
+  border-radius: 6px;
+  border-left: 3px solid #e74c3c;
+}
+
+/* Colonne droite */
+.signin-right {
+  width: 50%;
+  background: linear-gradient(135deg, #eccdd5 0%, #d4d2e2 100%);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
-.connection-error {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.ribbon {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 120px;
+  height: auto;
+  z-index: 10;
 }
 
-.refresh-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  width: auto;
-  padding: 0 5px;
-}
-
-.refresh-button:hover {
-  transform: rotate(180deg);
-  transition: transform 0.5s;
+.logo-text {
+  font-size: 60px;
+  color: white;
+  font-weight: bold;
+  font-family: "Comic Sans MS", cursive;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }

@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import SignIn from './components/auth/SignIn';
 import HelloPage from './components/HelloPage';
 
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
