@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from './auth/Sidebar';
 
 import { FaBars, FaTimes, FaUsers, FaFileAlt, FaGift } from 'react-icons/fa';
+import ContentTypeChart from './auth/ContentTypeChart';
 
 const HelloPage: React.FC = () => {
   const navigate = useNavigate();
@@ -203,14 +204,14 @@ const HelloPage: React.FC = () => {
           borderRadius: '8px',
           padding: '15px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          height: '300px',
+          height: '600px',
           marginBottom: '20px'
         }}>
           <h2 style={{ fontSize: '18px', marginBottom: '10px', color: '#333' }}>
             Répartition du contenu
           </h2>
           <div style={{ height: '250px' }}>
-        
+         <ContentTypeChart />
           </div>
         </div>
       </div>
