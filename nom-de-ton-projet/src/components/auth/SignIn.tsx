@@ -1,16 +1,16 @@
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import "./SignIn.css";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './SignIn.css';
 
 interface SignInProps {
   onLoginSuccess: () => void;
 }
 
 export default function SignIn({ onLoginSuccess }: SignInProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -20,36 +20,37 @@ export default function SignIn({ onLoginSuccess }: SignInProps) {
     setLoading(true);
 
     try {
-      console.log("Tentative de connexion avec:", { email, password });
-      
       // Appel à l'API de connexion
-      const response = await axios.post('http://localhost:4000/api/auth/signin', {
+      const response = await axios.post('http://localhost:5000/api/auth/signin', {
         email,
         password
       });
 
-      console.log("Réponse complète du serveur:", response);
+      console.log('Réponse de connexion:', response.data);
 
       if (response.data.success) {
-        console.log("✅ Connexion réussie! Utilisateur connecté:", response.data.user.email);
-        
         // Stocker le token dans localStorage
         localStorage.setItem('token', response.data.token);
         
         // Stocker les informations utilisateur
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
+        // Vérifier si l'utilisateur est un administrateur
+        if (response.data.user.isAdmin) {
+          console.log('Utilisateur admin connecté');
+          navigate('/admin-dashboard');
+        } else {
+          console.log('Utilisateur standard connecté');
+          navigate('/dashboard');
+        }
+        
         // Informer le parent que la connexion est réussie
         onLoginSuccess();
-        
-        // Naviguer vers la page d'accueil
-        navigate('/hello');
       } else {
-        console.log("❌ Échec de la connexion:", response.data);
         setError('Échec de la connexion. Veuillez réessayer.');
       }
     } catch (err: any) {
-      console.error('Erreur de connexion détaillée:', err.response || err);
+      console.error('Erreur de connexion:', err);
       
       // Afficher le message d'erreur de l'API si disponible
       setError(
@@ -64,7 +65,7 @@ export default function SignIn({ onLoginSuccess }: SignInProps) {
   return (
     <div className="signin-container">
       <h2>Connexion</h2>
-
+      
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -76,7 +77,7 @@ export default function SignIn({ onLoginSuccess }: SignInProps) {
             required
           />
         </div>
-
+        
         <div className="form-group">
           <label htmlFor="password">Mot de passe</label>
           <input
@@ -87,18 +88,22 @@ export default function SignIn({ onLoginSuccess }: SignInProps) {
             required
           />
         </div>
-
+        
         {error && <div className="error-message">{error}</div>}
-
+        
         <button type="submit" disabled={loading}>
-          {loading ? "Connexion..." : "Se connecter"}
+          {loading ? 'Connexion...' : 'Se connecter'}
         </button>
       </form>
+      
+      <div className="auth-links">
+        <a href="#" onClick={() => navigate('/forgot-password')}>
+          Mot de passe oublié ?
+        </a>
+        <a href="#" onClick={() => navigate('/signup')}>
+          Créer un compte
+        </a>
+      </div>
     </div>
   );
 }
-
-
-
-
-
