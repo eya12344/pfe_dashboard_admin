@@ -1,193 +1,150 @@
+import React, { useEffect, useState } from "react";
 import {
   FaHome,
-  FaChartBar,
-  FaCog,
-  FaSignOutAlt,
   FaUsers,
-  FaGift,
   FaFileAlt,
+  FaGift,
+  FaSignOutAlt,
+  FaCog,
+  FaChartBar
 } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
-import LogoD from "./LogoD.png";
+
+interface User {
+  _id: string;
+  fullName?: string;
+  email: string;
+  isAdmin?: boolean;
+}
 
 const Sidebar = () => {
   const location = useLocation();
-  
-  // Fonction pour gérer la déconnexion
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        setUser(userData);
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'utilisateur", error);
+      }
+    }
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     window.location.href = "/login";
   };
 
+  const getUserInitials = () => {
+    if (!user) return "U";
+    if (user.fullName) {
+      const parts = user.fullName.split(" ");
+      return parts.length > 1
+        ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+        : user.fullName[0].toUpperCase();
+    }
+    return user.email[0].toUpperCase();
+  };
+
+  const menuItems = [
+    { icon: <FaHome />, path: "/hello" },
+    { icon: <FaUsers />, path: "/users" },
+    { icon: <FaFileAlt />, path: "/publications" },
+    { icon: <FaGift />, path: "/gifts" },
+  ];
+
   return (
     <div
       style={{
-        height: "100%",
-        background: "linear-gradient(to bottom, #ECCDD5, #D4D2E2)",
-        color: "white",
+        height: "100vh",
+        width: "100px",
+        backgroundColor: "#fff",
+        boxShadow: "0 0 8px rgba(0, 0, 0, 0.1)",
+        borderRadius: "30px",
         display: "flex",
         flexDirection: "column",
-        padding: "20px 0",
+        alignItems: "center",
+        padding: "10px 0",
+        marginLeft: "20px",
+        marginRight: "20px",
+        position: "relative",
       }}
     >
-      {/* Logo et titre */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "0 20px 20px",
-          borderBottom: "1px solid rgba(255,255,255,0.1)",
-        }}
-      >
-        <img
-          src={LogoD}
-          alt="Logo"
-          style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            marginRight: "10px",
-          }}
-        />
-        <span
-          style={{
-            fontSize: "20px",
-            fontWeight: "bold",
-            color: "#ecf0f1",
-          }}
-        >
-          Wishit
-        </span>
+      {/* Avatar en haut */}
+      <div style={{ marginBottom: "20px" }}>
+        {user?.fullName ? (
+          <img
+            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+              user.fullName
+            )}&background=0D8ABC&color=fff&size=60`}
+            alt="avatar"
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              backgroundColor: "#ECCDD5",
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: "bold",
+            }}
+          >
+            {getUserInitials()}
+          </div>
+        )}
       </div>
 
-      {/* Profil utilisateur */}
+      {/* Icônes centrées verticalement */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          padding: "20px",
-          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          justifyContent: "center",
+          flex: 1,
+          gap: "40px",
         }}
       >
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-          alt="Admin"
-          style={{
-            width: "60px",
-            height: "60px",
-            borderRadius: "50%",
-            border: "2px solid #3498db",
-            padding: "2px",
-            backgroundColor: "white",
-          }}
-        />
-        <p
-          style={{
-            margin: "10px 0 0",
-            fontSize: "14px",
-            fontWeight: "bold",
-            color: "#ecf0f1",
-          }}
-        >
-          Salem Menssi
-        </p>
-        <span
-          style={{
-            fontSize: "12px",
-            color: "#bdc3c7",
-          }}
-        >
-          Administrateur
-        </span>
+        {menuItems.map((item, idx) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={idx}
+              to={item.path}
+              style={{
+                color: isActive ? "#ECCDD5" : "#888",
+                fontSize: "18px",
+              }}
+            >
+              {item.icon}
+            </Link>
+          );
+        })}
       </div>
 
-      {/* Menu de navigation */}
-      <nav style={{ flex: 1, padding: "20px 0" }}>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          {[
-            { icon: <FaHome />, text: "Tableau de bord", path: "/hello" },
-            { icon: <FaUsers />, text: "Utilisateurs", path: "/users" },
-            { icon: <FaFileAlt />, text: "Publications", path: "/publications" },
-            { icon: <FaGift />, text: "Cadeaux", path: "/gifts" },
-            { icon: <FaChartBar />, text: "Statistiques", path: "/stats" },
-            { icon: <FaCog />, text: "Paramètres", path: "/settings" },
-          ].map((item, index) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <li
-                key={index}
-                style={{
-                  padding: "12px 20px",
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  backgroundColor: isActive
-                    ? "rgba(236, 205, 213, 0.3)"
-                    : "transparent",
-                  borderLeft: isActive
-                    ? "4px solid #3498db"
-                    : "4px solid transparent",
-                  transition: "all 0.2s ease",
-                  marginBottom: "5px",
-                  borderRadius: "0 4px 4px 0",
-                }}
-              >
-                <Link
-                  to={item.path}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    textDecoration: "none",
-                    width: "100%",
-                  }}
-                >
-                  <span
-                    style={{
-                      marginRight: "10px",
-                      fontSize: "16px",
-                      color: isActive ? "#3498db" : "#ecf0f1",
-                    }}
-                  >
-                    {item.icon}
-                  </span>
-                  <span
-                    style={{
-                      color: isActive ? "#3498db" : "#ecf0f1",
-                      fontWeight: isActive ? "bold" : "normal",
-                    }}
-                  >
-                    {item.text}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-
-      {/* Déconnexion */}
+      {/* Bouton logout en bas */}
       <div
         onClick={handleLogout}
         style={{
-          padding: "25px 25px",
-          borderTop: "1px solid rgba(255,255,255,0.1)",
-          display: "flex",
-          alignItems: "center",
           cursor: "pointer",
-          transition: "background-color 0.2s ease",
+          padding: "10px 0",
+          color: "#888",
         }}
-        onMouseOver={(e) =>
-          (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)")
-        }
-        onMouseOut={(e) =>
-          (e.currentTarget.style.backgroundColor = "transparent")
-        }
       >
-        <FaSignOutAlt style={{ marginRight: "10px", color: "#3498db" }} />
-        <span style={{ color: "#ecf0f1" }}>Déconnexion</span>
+        <FaSignOutAlt size={18} />
       </div>
     </div>
   );

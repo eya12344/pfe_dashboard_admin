@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./components/auth/SignIn";
-import HelloPage from "./components/HelloPage";
+import DashboardLayout from "./components/layout/DashboardLayout";
+import DashboardHome from "./components/dashboard/DashboardHome";
+import UsersContent from "./components/dashboard/UsersContent";
+import UserLocationsTable from "./components/dashboard/DashboardHome";
+import PublicationsContent from "./components/dashboard/PublicationsContent";
+import GiftsContent from "./components/dashboard/GiftsContent";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,21 +33,28 @@ function App() {
   return (
     <div className="App">
       <Routes>
+        {/* Routes d'authentification */}
         <Route
           path="/login"
           element={<SignIn onLoginSuccess={handleLoginSuccess} />}
         />
-        <Route path="/hello" element={<HelloPage />} />
-        <Route
-          path="/"
-          element={<SignIn onLoginSuccess={handleLoginSuccess} />}
-        />
+        
+        {/* Routes du dashboard avec layout partagé */}
+        <Route path="/" element={<DashboardLayout />}>
+          <Route index element={<Navigate to="/hello" replace />} />
+          <Route path="hello" element={<DashboardHome />} />
+          <Route path="users" element={<UsersContent />} />
+          <Route path="user-locations" element={<UserLocationsTable />} /> {/* Nouvelle route */}
+          <Route path="publications" element={<PublicationsContent />} />
+          <Route path="gifts" element={<GiftsContent />} />
+          <Route path="stats" element={<DashboardHome />} /> {/* Placeholder */}
+          <Route path="settings" element={<DashboardHome />} /> {/* Placeholder */}
+        </Route>
       </Routes>
     </div>
   );
 }
 
 export default App;
-
 
 

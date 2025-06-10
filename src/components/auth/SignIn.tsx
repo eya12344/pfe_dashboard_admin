@@ -20,6 +20,15 @@ export default function SignIn({ onLoginSuccess }: SignInProps) {
     setLoading(true);
 
     try {
+      // Vérification des champs avant envoi
+      if (!email || !password) {
+        setError("Veuillez remplir tous les champs");
+        setLoading(false);
+        return;
+      }
+
+      console.log("Tentative de connexion avec:", { email, password });
+
       const response = await axios.post(
         "http://localhost:4000/api/auth/signin",
         {
@@ -28,19 +37,58 @@ export default function SignIn({ onLoginSuccess }: SignInProps) {
         }
       );
 
+      console.log("Réponse du serveur:", response.data);
+
       if (response.data.success) {
+        // Stocker le token et les infos utilisateur
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
+
+        console.log("Connexion réussie, utilisateur:", response.data.user);
+
+        // Informer le parent de la connexion réussie
         onLoginSuccess();
-        navigate("/hello");
+
+        // Redirection selon le type d'utilisateur
+        if (response.data.user.isAdmin) {
+          navigate("/hello");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         setError("Échec de la connexion. Veuillez réessayer.");
       }
     } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-          "Échec de la connexion. Veuillez vérifier vos identifiants."
-      );
+      console.error("Erreur complète:", err);
+
+      if (err.response) {
+        console.error("Détails de l'erreur:", {
+          status: err.response.status,
+          data: err.response.data,
+        });
+
+        // Messages d'erreur spécifiques selon le code d'erreur
+        if (err.response.status === 401) {
+          setError("Email ou mot de passe incorrect");
+        } else if (err.response.status === 404) {
+          setError("Utilisateur non trouvé");
+        } else {
+          setError(
+            err.response.data.message ||
+              "Erreur lors de la connexion. Veuillez réessayer."
+          );
+        }
+      } else if (err.request) {
+        // La requête a été envoyée mais pas de réponse
+        console.error("Pas de réponse du serveur:", err.request);
+        setError(
+          "Le serveur ne répond pas. Vérifiez votre connexion internet."
+        );
+      } else {
+        // Erreur lors de la configuration de la requête
+        console.error("Erreur de requête:", err.message);
+        setError("Erreur lors de la connexion: " + err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -82,6 +130,17 @@ export default function SignIn({ onLoginSuccess }: SignInProps) {
               <button type="submit" disabled={loading}>
                 {loading ? "Connexion..." : "Se connecter"}
               </button>
+            </div>
+
+            <div
+              style={{
+                marginTop: "15px",
+                textAlign: "center",
+                fontSize: "12px",
+                color: "#666",
+              }}
+            >
+              <p>Cette application est réservée aux administrateurs.</p>
             </div>
           </form>
         </div>
